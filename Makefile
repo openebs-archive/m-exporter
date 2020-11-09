@@ -51,6 +51,12 @@ export XC_ARCH
 ARCH:=${XC_OS}_${XC_ARCH}
 export ARCH
 
+# list only the source code directories
+PACKAGES = $(shell go list ./... | grep -v 'vendor\|pkg/client/generated\|tests')
+
+# list only the integration tests code directories
+PACKAGES_IT = $(shell go list ./... | grep -v 'vendor\|pkg/client/generated' | grep 'tests')
+
 # Specify the name for the binaries
 EXPORTER=exporter
 
@@ -78,12 +84,33 @@ deps:
 	@go mod verify
 
 .PHONY: test
-test:
-	go test ./...
+test: format vet
+	@echo "--> Running go test";
+	$(PWD)/build/test.sh ${XC_ARCH}
+
+.PHONY: testv
+testv: format
+	@echo "--> Running go test verbose" ;
+	@go test -v $(PACKAGES)
+
+.PHONY: format
+format:
+	@echo "--> Running go fmt"
+	@go fmt $(PACKAGES) $(PACKAGES_IT)
+
+# -composite: avoid "literal copies lock value from fakePtr"
+.PHONY: vet
+vet:
+	@echo "--> Running go vet"
+	@go list ./... | grep -v "./vendor/*" | xargs go vet -composites
+
+.PHONY: verify-src
+verify-src: 
+	@echo "--> Checking for git changes post running tests";
+	$(PWD)/build/check-diff.sh "format"
 
 # Specify the name of the docker repo for amd64
-EXPORTER_REPO_NAME="exporter"
-EXPORTER_IMAGE_NAME="m-exporter"
+EXPORTER_IMAGE?="m-exporter"
 
 ifeq (${IMAGE_TAG}, )
   IMAGE_TAG = ci
@@ -112,20 +139,20 @@ export DBUILD_ARGS=--build-arg BASE_IMAGE=$(CSTOR_BASE_IMAGE) --build-arg DBUILD
 exporter-image: exporter
 	@echo "-----------------------------------------------"
 	@echo "--> ${EXPORTER} image                           "
-	@echo "${IMAGE_ORG}/${EXPORTER_IMAGE_NAME}:${IMAGE_TAG}"
+	@echo "${IMAGE_ORG}/${EXPORTER_IMAGE}:${IMAGE_TAG}"
 	@echo "-----------------------------------------------"
 	@cp bin/${EXPORTER}/${EXPORTER} build/${EXPORTER}
 	@cd build/${EXPORTER} && \
-	 sudo docker build -t "${IMAGE_ORG}/${EXPORTER_IMAGE_NAME}:${IMAGE_TAG}" ${DBUILD_ARGS} .
+	 sudo docker build -t "${IMAGE_ORG}/${EXPORTER_IMAGE}:${IMAGE_TAG}" ${DBUILD_ARGS} .
 	@rm build/${EXPORTER}/${EXPORTER}
 
 .PHONY: all
 all: check-license deps test exporter
 
 # Push images
-.PHONY: deploy-images
-deploy-images:
-	@./build/deploy.sh
+.PHONY: push
+push:
+	DIMAGE=${IMAGE_ORG}/${EXPORTER_IMAGE} ./build/push.sh
 
 .PHONY: check_license
 check-license:
