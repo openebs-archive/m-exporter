@@ -57,5 +57,5 @@ docker.buildx.exporter:
 
 .PHONY: buildx.push.exporter
 buildx.push.exporter:
-	BUILDX=true DIMAGE=${IMAGE_ORG}/exporter ./build/buildxpush.sh
+	BUILDX=true DIMAGE=${IMAGE_ORG}/m-exporter ./build/push.sh
 

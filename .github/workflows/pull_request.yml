@@ -54,11 +54,14 @@ jobs:
     - name: verify license
       run: make check-license
 
-    - name: verify dependencies
-      run: make deps
-
     - name: verify tests
       run: make test
+
+    - name: Verify corrections
+      run: make verify-src
+
+    - name: Upload Coverage Report
+      uses: codecov/codecov-action@v1
 
   exporter:
     runs-on: ubuntu-latest
