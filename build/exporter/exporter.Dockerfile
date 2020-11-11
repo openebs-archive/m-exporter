@@ -29,7 +29,7 @@ ENV GO111MODULE=on \
   DEBIAN_FRONTEND=noninteractive \
   PATH="/root/go/bin:${PATH}"
 
-WORKDIR /go/src/github.com/openebs/openebs-exporter
+WORKDIR /go/src/github.com/openebs/m-exporter
 
 RUN apt-get update && apt-get install -y make git
 
@@ -54,7 +54,7 @@ LABEL org.label-schema.vcs-url=$DBUILD_REPO_URL
 LABEL org.label-schema.url=$DBUILD_SITE_URL
 
 # copy the latest binary
-COPY --from=build /go/src/github.com/openebs/openebs-exporter/bin/exporter/exporter /usr/local/bin/maya-exporter
+COPY --from=build /go/src/github.com/openebs/m-exporter/bin/exporter/exporter /usr/local/bin/maya-exporter
 
 CMD maya-exporter
 EXPOSE 9500
