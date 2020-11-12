@@ -132,7 +132,7 @@ exporter:
 	@# A copy of the binary will also be placed under: ./bin/${PNAME}/${CTLNAME}
 	@PNAME=${EXPORTER} CTLNAME=${EXPORTER} CGO_ENABLED=0 sh -c "'$(PWD)/build/build.sh'"
 
-export DBUILD_ARGS=--build-arg BASE_IMAGE=$(CSTOR_BASE_IMAGE) --build-arg DBUILD_DATE=${DBUILD_DATE} --build-arg DBUILD_REPO_URL=${DBUILD_REPO_URL} --build-arg DBUILD_SITE_URL=${DBUILD_SITE_URL}
+export DBUILD_ARGS=--build-arg BASE_IMAGE=$(CSTOR_BASE_IMAGE) --build-arg DBUILD_DATE=${DBUILD_DATE} --build-arg DBUILD_REPO_URL=${DBUILD_REPO_URL} --build-arg DBUILD_SITE_URL=${DBUILD_SITE_URL} --build-arg RELEASE_TAG=${RELEASE_TAG} --build-arg BRANCH=${BRANCH}
 
 # build exporter image
 .PHONY: exporter-image
