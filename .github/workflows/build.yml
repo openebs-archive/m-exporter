@@ -153,3 +153,4 @@ jobs:
             DBUILD_REPO_URL=https://github.com/openebs/m-exporter
             DBUILD_SITE_URL=https://openebs.io
             BRANCH=${{ env.BRANCH }}
+            BASE_IMAGE=${{ env.IMAGE_ORG }}/cstor-base:${{ env.TAG }}

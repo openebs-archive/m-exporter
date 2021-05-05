@@ -93,3 +93,5 @@ jobs:
           platforms: linux/amd64, linux/arm64
           tags: |
             openebs/m-exporter:ci
+          build-args: |
+            BASE_IMAGE=openebs/cstor-base:ci
